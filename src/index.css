@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+
+  --color-ink-950: #10151a;
+  --color-ink-900: #161d24;
+  --color-ink-800: #1f2932;
+  --color-ink-700: #2b3742;
+  --color-ink-600: #3d4b57;
+  --color-ink-500: #5b6b78;
+  --color-ink-400: #869199;
+  --color-ink-300: #b5bdc2;
+  --color-ink-200: #dde1e3;
+  --color-ink-100: #eef0f1;
+  --color-ink-50: #f7f8f8;
+
+  --color-moss-950: #0e1f16;
+  --color-moss-900: #163826;
+  --color-moss-800: #1c4a31;
+  --color-moss-700: #245c3d;
+  --color-moss-600: #2e7249;
+  --color-moss-500: #3c8a5a;
+  --color-moss-400: #5fa878;
+  --color-moss-300: #92c6a4;
+  --color-moss-200: #c3e2cd;
+  --color-moss-100: #e2f1e6;
+  --color-moss-50: #f2f9f3;
+
+  --color-clay-600: #b3552f;
+  --color-clay-500: #cb6a3e;
+  --color-clay-400: #de8a5f;
+  --color-clay-300: #edb28c;
+  --color-clay-100: #fbe9dd;
+  --color-clay-50: #fdf4ee;
+
+  --color-gold-500: #c99a34;
+  --color-gold-400: #dab35c;
+  --color-gold-100: #f8ecd1;
+
+  --shadow-card: 0 1px 2px rgba(16, 21, 26, 0.04), 0 8px 24px -12px rgba(16, 21, 26, 0.12);
+  --shadow-card-hover: 0 2px 4px rgba(16, 21, 26, 0.06), 0 16px 32px -12px rgba(16, 21, 26, 0.18);
+  --shadow-nav: 0 -1px 0 rgba(16, 21, 26, 0.06), 0 -8px 24px -16px rgba(16, 21, 26, 0.15);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-800 antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    @apply bg-moss-200 text-moss-900;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
