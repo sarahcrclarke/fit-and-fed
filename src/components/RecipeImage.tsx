@@ -1,13 +1,13 @@
 import { useId, type ReactNode } from 'react'
-import type { DishArt, RecipeCategory } from '../data/recipes'
+import type { DishArt, Recipe, RecipeCategory } from '../data/recipes'
+import { recipePhoto } from '../data/recipePhotos'
 
 /**
  * Pictures of the meal ideas.
  *
- * These are drawn rather than photographed: the app ships offline as a PWA with no
- * backend, so every image has to be in the bundle, and 30-odd food photos would dwarf
- * everything else in it. Flat SVG keeps a recipe's thumbnail at a few hundred bytes,
- * sharp at any size, and free of licensing questions.
+ * A recipe shows a photograph when one exists for it in `src/assets/recipes/` — see
+ * `recipePhotos.ts` for the naming convention. The drawings below are the fallback for
+ * recipes that don't have a photo yet, so the list is never blank.
  *
  * Each drawing lives on a 64 × 64 canvas. Crockery comes from the shared pieces at the
  * top; the food on it is what makes each dish recognisable.
@@ -712,19 +712,29 @@ const ART: Record<DishArt, () => ReactNode> = {
 }
 
 /**
- * The picture for one meal idea. Decorative by default — the recipe's name sits next to it
- * in every place it is used, so announcing the drawing too would just repeat that.
+ * The picture for one meal idea: the photograph if the recipe has one in
+ * `src/assets/recipes/`, otherwise the drawing above.
+ *
+ * Decorative either way — the recipe's name sits next to it in every place it is used, so
+ * announcing the picture as well would only repeat that.
  */
-export function RecipeImage({
-  art,
-  category,
-  className = '',
-}: {
-  art: DishArt
-  category: RecipeCategory
-  className?: string
-}) {
-  const Dish = ART[art]
+export function RecipeImage({ recipe, className = '' }: { recipe: Recipe; className?: string }) {
+  const photo = recipePhoto(recipe.id)
+
+  if (photo) {
+    return (
+      <img
+        src={photo}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className={`object-cover ${className}`}
+        style={{ background: CATEGORY_TINT[recipe.category] }}
+      />
+    )
+  }
+
+  const Dish = ART[recipe.art]
   return (
     <svg
       // Tighter than the 64 × 64 the dishes are drawn on: the drawings leave a margin the
@@ -734,7 +744,7 @@ export function RecipeImage({
       className={className}
       aria-hidden="true"
       focusable="false"
-      style={{ background: CATEGORY_TINT[category] }}
+      style={{ background: CATEGORY_TINT[recipe.category] }}
     >
       <Dish />
     </svg>

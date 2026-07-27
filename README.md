@@ -33,14 +33,17 @@ the app still runs in private-browsing modes — it just won't persist.
 
 ## Pictures
 
-Nothing in the app is a bitmap. Both places that show imagery draw SVG at render time,
-which keeps the whole thing installable offline without shipping a picture library.
+**Meal ideas** show a photograph when one exists for them. Drop an image into
+`src/assets/recipes/` named after the recipe's `id` — `salmon-traybake.jpg` — and it
+becomes that meal's picture; nothing else needs editing, because `src/data/recipePhotos.ts`
+resolves the folder at build time. Photos come out content-hashed in `dist/assets/`, which
+the service worker already caches cache-first, so they work offline after first view. See
+`src/assets/recipes/README.md` for naming, size and licensing.
 
-**Meal ideas** each carry an `art` key (`src/data/recipes.ts`) naming one of the drawings
-in `RecipeImage.tsx`. Dishes that genuinely look alike on a plate — the two wraps, the two
-Kievs — share a drawing; everything else has its own. The tile is tinted by recipe
-category. To add a recipe, pick an existing `DishArt` or add a new drawing on the same
-64 × 64 canvas using the shared plate/bowl/tray pieces at the top of the file.
+Until a recipe has a photo it falls back to a drawing, so the list is never blank. Each
+recipe carries an `art` key (`src/data/recipes.ts`) naming one of the drawings in
+`RecipeImage.tsx`; dishes that genuinely look alike on a plate — the two wraps, the two
+Kievs — share one. The tile is tinted by recipe category.
 
 **The Body Focus heatmap** shades muscle groups by minutes trained this week. Sarah's
 profile draws a female figure and Dom's a male one; Household draws both, on one shared

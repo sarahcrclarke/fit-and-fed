@@ -99,8 +99,7 @@ export function RecipeBrowser({
               className="flex items-start gap-3 rounded-2xl border border-ink-100 bg-white p-3 shadow-card"
             >
               <RecipeImage
-                art={recipe.art}
-                category={recipe.category}
+                recipe={recipe}
                 className="h-16 w-16 shrink-0 rounded-xl ring-1 ring-ink-100 sm:h-20 sm:w-20"
               />
               <div className="min-w-0 flex-1 py-0.5">
