@@ -44,6 +44,35 @@ The app is installable and works offline:
 Bump `VERSION` in `public/sw.js` when the shell asset list changes — old caches are dropped
 on activate.
 
+Manifest paths are relative (`./icon-192.png`, `"scope": "./"`) so they resolve against
+wherever the manifest is served from. Files in `public/` are copied verbatim — Vite does not
+rewrite them for `base` — so keep them relative.
+
+## Deployment
+
+Published to GitHub Pages at `https://sarahcrclarke.github.io/fit-and-fed/` by
+`.github/workflows/deploy.yml`, which builds with Vite and publishes `dist/`.
+
+Because it's a project site, the app is served from the `/fit-and-fed/` subpath. Three
+things follow from that, and all three must agree:
+
+- `vite.config.ts` sets `base` (override with `BASE_PATH` — the workflow passes the repo
+  name). This is what prefixes every built asset URL.
+- `BrowserRouter` takes `basename={import.meta.env.BASE_URL}` so routes resolve under the
+  subpath rather than the domain root.
+- The workflow copies `dist/index.html` to `dist/404.html`. GitHub Pages serves `404.html`
+  for unknown paths, which is what makes a cold deep link like `/fit-and-fed/progress`
+  boot the app. Pages returns a 404 status with it; the page itself renders correctly, and
+  once the service worker is installed it serves navigations from cache instead.
+
+**Pages must be set to "GitHub Actions" as its source** (Settings → Pages → Build and
+deployment). Pointing it at a branch publishes the repository root, which is unbuilt
+source — `index.html` there references `/src/main.tsx`, which no browser can execute, so
+the page comes up blank.
+
+Because `base` is set, the dev server also serves from the subpath —
+`http://localhost:5173/fit-and-fed/`. Vite prints the URL on start and redirects `/` to it.
+
 ## Getting started
 
 ```bash

@@ -9,7 +9,8 @@ import { registerServiceWorker } from './pwa/registerServiceWorker'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    {/* BASE_URL keeps routing correct when the app is served from a subpath. */}
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ProfileProvider>
         <DataProvider>
           <App />
