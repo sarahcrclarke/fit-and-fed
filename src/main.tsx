@@ -4,13 +4,19 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { ProfileProvider } from './context/ProfileContext'
+import { DataProvider } from './data/store'
+import { registerServiceWorker } from './pwa/registerServiceWorker'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <ProfileProvider>
-        <App />
+        <DataProvider>
+          <App />
+        </DataProvider>
       </ProfileProvider>
     </BrowserRouter>
   </StrictMode>,
 )
+
+registerServiceWorker()

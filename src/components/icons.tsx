@@ -97,3 +97,57 @@ export function CheckIcon(props: IconProps) {
     </svg>
   )
 }
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <svg {...base} strokeWidth={2} {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  )
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <svg {...base} strokeWidth={2} {...props}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  )
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 7h16" />
+      <path d="M9.5 7V5h5v2" />
+      <path d="M6 7v12.5A1.5 1.5 0 0 0 7.5 21h9a1.5 1.5 0 0 0 1.5-1.5V7" />
+      <path d="M10.5 11v6M13.5 11v6" />
+    </svg>
+  )
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  )
+}
+
+export function CheckCircleIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="m8.5 12.2 2.4 2.4 4.6-4.9" strokeWidth={2} />
+    </svg>
+  )
+}
+
+export function FlameIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3s4.5 4 4.5 8.5a4.5 4.5 0 0 1-9 0C7.5 9.8 9 8.5 9 8.5s.5 2 1.5 2S12 6 12 3Z" />
+      <path d="M12 21a5.5 5.5 0 0 0 5.5-5.5" opacity="0.4" />
+    </svg>
+  )
+}
