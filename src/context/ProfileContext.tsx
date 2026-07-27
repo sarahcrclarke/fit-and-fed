@@ -7,11 +7,13 @@ export interface Profile {
   name: string
   tagline: string
   initials: string
+  /** Which body the muscle heatmap draws. Household has no single body, so it draws both. */
+  figure?: 'female' | 'male'
 }
 
 export const PROFILES: Profile[] = [
-  { id: 'sarah', name: 'Sarah', tagline: 'Personal plan', initials: 'S' },
-  { id: 'dom', name: 'Dom', tagline: 'Personal plan', initials: 'D' },
+  { id: 'sarah', name: 'Sarah', tagline: 'Personal plan', initials: 'S', figure: 'female' },
+  { id: 'dom', name: 'Dom', tagline: 'Personal plan', initials: 'D', figure: 'male' },
   { id: 'household', name: 'Household', tagline: 'Shared plan', initials: 'H' },
 ]
 

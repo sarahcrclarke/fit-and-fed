@@ -1,39 +1,64 @@
 import { useMemo, useState } from 'react'
 import { Button } from '../components/Button'
+import { MuscleMap, MuscleMapLegend } from '../components/MuscleMap'
 import { PageHeader } from '../components/PageHeader'
 import { WorkoutSheet } from '../components/WorkoutSheet'
 import { ChipGroup } from '../components/fields'
 import { BodyFocusIcon, PlusIcon } from '../components/icons'
-import { useProfile } from '../context/ProfileContext'
+import { PROFILES, useProfile, type ProfileId } from '../context/ProfileContext'
 import { startOfWeek, todayISO, weekDates } from '../data/dates'
-import { useData } from '../data/store'
-import { BODY_AREAS, type BodyArea } from '../data/types'
+import { belongsToView, useData } from '../data/store'
+import { BODY_AREAS, type BodyArea, type Workout } from '../data/types'
 import { useScopedData } from '../data/useScoped'
+
+/** Minutes of training per body area, from the areas tagged on each workout in `week`. */
+function minutesPerArea(workouts: Workout[], week: Set<string>): Map<BodyArea, number> {
+  const totals = new Map<BodyArea, number>()
+  for (const workout of workouts) {
+    if (!week.has(workout.date)) continue
+    for (const area of workout.areas) {
+      totals.set(area, (totals.get(area) ?? 0) + workout.durationMin)
+    }
+  }
+  return totals
+}
 
 export function BodyFocus() {
   const { activeProfile } = useProfile()
   const { workouts, goals } = useScopedData()
-  const { setGoals } = useData()
+  const { data, setGoals } = useData()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [sheetAreas, setSheetAreas] = useState<BodyArea[]>([])
 
   const thisWeek = useMemo(() => new Set(weekDates(startOfWeek(todayISO()))), [])
 
-  /** Minutes of training this week per body area, from the areas tagged on each workout. */
-  const minutesByArea = useMemo(() => {
-    const totals = new Map<BodyArea, number>()
-    for (const workout of workouts) {
-      if (!thisWeek.has(workout.date)) continue
-      for (const area of workout.areas) {
-        totals.set(area, (totals.get(area) ?? 0) + workout.durationMin)
-      }
-    }
-    return totals
-  }, [workouts, thisWeek])
+  const minutesByArea = useMemo(() => minutesPerArea(workouts, thisWeek), [workouts, thisWeek])
+
+  /**
+   * The heatmap needs a body, and Household isn't one — so it draws Sarah and Dom
+   * separately, each from the workouts in their own view. A workout saved under Household
+   * is in both views, so it shades both figures, exactly as it counts for both people
+   * everywhere else in the app. Everyone is shaded against the same busiest-area total so
+   * the two figures can be compared directly.
+   */
+  const people = useMemo(() => {
+    const ids: ProfileId[] = activeProfile.id === 'household' ? ['sarah', 'dom'] : [activeProfile.id]
+    return ids.flatMap((id) => {
+      const profile = PROFILES.find((p) => p.id === id)
+      if (!profile?.figure) return []
+      const own = data.workouts.filter((w) => belongsToView(w.profileId, id))
+      return [{ profile, figure: profile.figure, minutes: minutesPerArea(own, thisWeek) }]
+    })
+  }, [activeProfile.id, data.workouts, thisWeek])
+
+  /** Shared colour scale across every figure on the page. */
+  const mapMax = Math.max(1, ...people.flatMap((p) => [...p.minutes.values()]))
+  const mappedTotal = people.reduce((sum, p) => sum + [...p.minutes.values()].reduce((a, b) => a + b, 0), 0)
 
   const maxMinutes = Math.max(1, ...minutesByArea.values())
   const selected = goals.focusAreas
   const untouched = selected.filter((area) => !minutesByArea.has(area))
+  const conditioning = minutesByArea.get('conditioning') ?? 0
 
   function toggleArea(area: BodyArea) {
     const next = selected.includes(area)
@@ -129,6 +154,49 @@ export function BodyFocus() {
           )}
         </section>
       </div>
+
+      <section className="mt-6 rounded-2xl border border-ink-100 bg-white p-5 shadow-card">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 className="font-display text-lg text-ink-900">Muscle heatmap</h2>
+          <p className="text-xs text-ink-400">
+            Minutes trained this week{people.length > 1 && ', on a shared scale'}
+          </p>
+        </div>
+
+        {mappedTotal === 0 ? (
+          <p className="mt-4 rounded-xl border border-dashed border-ink-200 px-4 py-8 text-center text-sm text-ink-400">
+            Nothing to shade yet — log a workout with body areas tagged and the muscles it worked
+            light up here.
+          </p>
+        ) : (
+          <>
+            <div className="mt-4 flex flex-wrap items-start justify-center gap-x-10 gap-y-6">
+              {people.map((person) => (
+                <MuscleMap
+                  key={person.profile.id}
+                  sex={person.figure}
+                  name={person.profile.name}
+                  minutesByArea={person.minutes}
+                  maxMinutes={mapMax}
+                />
+              ))}
+            </div>
+            <div className="mt-4 border-t border-ink-100 pt-3">
+              <MuscleMapLegend maxMinutes={mapMax} />
+            </div>
+          </>
+        )}
+
+        {conditioning > 0 && (
+          <p className="mt-3 text-xs text-ink-500">
+            Plus <span className="font-medium text-ink-700">{conditioning} min</span> of conditioning
+            — whole-body work, so it isn't shaded onto any one muscle.
+          </p>
+        )}
+        <p className="mt-2 text-xs text-ink-400">
+          Shading follows the areas tagged on each workout. Exact minutes per area are listed above.
+        </p>
+      </section>
 
       <WorkoutSheet
         open={sheetOpen}

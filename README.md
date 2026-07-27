@@ -16,6 +16,8 @@ A fitness and nutrition app for a two-person household — built for Sarah and D
 - `src/context/ProfileContext.tsx` — the Sarah / Dom / Household profile switcher
 - `src/data` — record types, date helpers, and the localStorage-backed store
 - `src/components` — shared UI (page headers, cards, form fields, sheets, icons)
+- `src/components/RecipeImage.tsx` — the drawings shown against each meal idea
+- `src/components/MuscleMap.tsx`, `src/components/anatomy.ts` — the Body Focus heatmap
 - `src/pwa` — service worker registration
 - `public/manifest.webmanifest`, `public/sw.js` — install metadata and the offline app shell
 
@@ -28,6 +30,29 @@ visible to everyone. A person's view shows their own records plus the household'
 
 Reading corrupt or blocked storage falls back to an empty dataset rather than crashing, so
 the app still runs in private-browsing modes — it just won't persist.
+
+## Pictures
+
+Nothing in the app is a bitmap. Both places that show imagery draw SVG at render time,
+which keeps the whole thing installable offline without shipping a picture library.
+
+**Meal ideas** each carry an `art` key (`src/data/recipes.ts`) naming one of the drawings
+in `RecipeImage.tsx`. Dishes that genuinely look alike on a plate — the two wraps, the two
+Kievs — share a drawing; everything else has its own. The tile is tinted by recipe
+category. To add a recipe, pick an existing `DishArt` or add a new drawing on the same
+64 × 64 canvas using the shared plate/bowl/tray pieces at the top of the file.
+
+**The Body Focus heatmap** shades muscle groups by minutes trained this week. Sarah's
+profile draws a female figure and Dom's a male one; Household draws both, on one shared
+colour scale so they can be compared. Both bodies come out of a single builder in
+`anatomy.ts` driven by a table of half-widths at fixed heights — nudging a shoulder is one
+number, not a set of bezier handles — and only one side of each paired muscle is authored,
+the other being mirrored about the spine. Shading uses a five-step single-hue ramp
+(checked for lightness monotonicity, and for a light end that still separates from the
+white card); areas with nothing logged stay neutral grey rather than taking the ramp's
+lowest step. Conditioning is whole-body, so it is reported next to the map instead of
+being painted onto one muscle. Exact per-area minutes stay in the coverage list above the
+map, which is what makes the colour safe to read.
 
 ## PWA
 
