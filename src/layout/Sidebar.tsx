@@ -1,4 +1,7 @@
+import { useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
+import { startOfWeek, todayISO, weekDates } from '../data/dates'
+import { useScopedData } from '../data/useScoped'
 import { NAV_ITEMS } from './navigation'
 
 export function Sidebar() {
@@ -40,10 +43,28 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="rounded-xl border border-ink-100 bg-ink-50 px-3.5 py-3">
-        <p className="text-xs font-medium text-ink-500">This week</p>
-        <p className="mt-0.5 text-sm text-ink-800">Plans are looking quiet — add your first workout or meal.</p>
-      </div>
+      <WeekSummary />
     </aside>
+  )
+}
+
+function WeekSummary() {
+  const { workouts, meals } = useScopedData()
+
+  const thisWeek = useMemo(() => new Set(weekDates(startOfWeek(todayISO()))), [])
+  const sessions = workouts.filter((w) => thisWeek.has(w.date))
+  const done = sessions.filter((w) => w.done).length
+  const plannedMeals = meals.filter((m) => thisWeek.has(m.date)).length
+
+  const summary =
+    sessions.length === 0 && plannedMeals === 0
+      ? 'Plans are looking quiet — add your first workout or meal.'
+      : `${done} of ${sessions.length} ${sessions.length === 1 ? 'session' : 'sessions'} done · ${plannedMeals} ${plannedMeals === 1 ? 'meal' : 'meals'} on the plan.`
+
+  return (
+    <div className="rounded-xl border border-ink-100 bg-ink-50 px-3.5 py-3">
+      <p className="text-xs font-medium text-ink-500">This week</p>
+      <p className="mt-0.5 text-sm text-ink-800">{summary}</p>
+    </div>
   )
 }
