@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useProfile } from '../context/ProfileContext'
 import { formatDayRelative, todayISO } from '../data/dates'
+import type { Recipe } from '../data/recipes'
 import { useData } from '../data/store'
 import { MEAL_SLOTS, type MealSlot } from '../data/types'
 import { Button } from './Button'
 import { Field, SegmentedControl, TextArea, TextInput } from './fields'
+import { MealsIcon } from './icons'
+import { RecipeBrowser } from './RecipeBrowser'
 import { Sheet } from './Sheet'
 
 export function MealSheet({
@@ -13,6 +16,7 @@ export function MealSheet({
   defaultDate,
   defaultSlot = 'breakfast',
   planned = false,
+  preset,
 }: {
   open: boolean
   onClose: () => void
@@ -20,6 +24,8 @@ export function MealSheet({
   defaultSlot?: MealSlot
   /** `true` when the meal is being added to the weekly plan rather than logged as eaten. */
   planned?: boolean
+  /** Prefill the form from a meal idea, e.g. when opened from the Ideas list. */
+  preset?: Recipe
 }) {
   const { addMeal } = useData()
   const { activeProfile } = useProfile()
@@ -29,19 +35,33 @@ export function MealSheet({
   const [date, setDate] = useState(defaultDate ?? todayISO())
   const [calories, setCalories] = useState('')
   const [notes, setNotes] = useState('')
+  const [browsing, setBrowsing] = useState(false)
 
   // Defaults come through a ref so inline props don't retrigger the reset — see WorkoutSheet.
-  const defaultsRef = useRef({ defaultDate, defaultSlot })
-  defaultsRef.current = { defaultDate, defaultSlot }
+  const defaultsRef = useRef({ defaultDate, defaultSlot, preset })
+  defaultsRef.current = { defaultDate, defaultSlot, preset }
   const wasOpen = useRef(false)
+
+  function applyRecipe(recipe: Recipe) {
+    setName(recipe.name)
+    setSlot(recipe.slot)
+    setCalories(String(recipe.calories))
+    setNotes(recipe.note ?? '')
+  }
 
   useEffect(() => {
     if (open && !wasOpen.current) {
-      setName('')
-      setSlot(defaultsRef.current.defaultSlot)
-      setDate(defaultsRef.current.defaultDate ?? todayISO())
-      setCalories('')
-      setNotes('')
+      const d = defaultsRef.current
+      setDate(d.defaultDate ?? todayISO())
+      setBrowsing(false)
+      if (d.preset) {
+        applyRecipe(d.preset)
+      } else {
+        setName('')
+        setSlot(d.defaultSlot)
+        setCalories('')
+        setNotes('')
+      }
     }
     wasOpen.current = open
   }, [open])
@@ -63,6 +83,31 @@ export function MealSheet({
     onClose()
   }
 
+  // Browsing swaps the sheet's body for the ideas list rather than stacking a second
+  // overlay — picking one fills the form and comes straight back.
+  if (browsing) {
+    return (
+      <Sheet
+        open={open}
+        onClose={onClose}
+        title="Meal ideas"
+        footer={
+          <Button variant="secondary" onClick={() => setBrowsing(false)}>
+            Back to form
+          </Button>
+        }
+      >
+        <RecipeBrowser
+          actionLabel="Use"
+          onPick={(recipe) => {
+            applyRecipe(recipe)
+            setBrowsing(false)
+          }}
+        />
+      </Sheet>
+    )
+  }
+
   return (
     <Sheet
       open={open}
@@ -80,6 +125,10 @@ export function MealSheet({
       }
     >
       <div className="flex flex-col gap-4">
+        <Button variant="secondary" size="sm" onClick={() => setBrowsing(true)} className="self-start">
+          <MealsIcon className="h-3.5 w-3.5" /> Pick from meal ideas
+        </Button>
+
         <Field label="Meal">
           <TextInput
             value={name}
