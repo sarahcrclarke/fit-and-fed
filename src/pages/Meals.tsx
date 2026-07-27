@@ -3,18 +3,30 @@ import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
 import { MealSheet } from '../components/MealSheet'
 import { PageHeader } from '../components/PageHeader'
+import { RecipeBrowser } from '../components/RecipeBrowser'
+import { SegmentedControl } from '../components/fields'
 import { MealsIcon, PlusIcon } from '../components/icons'
 import { MealRow } from '../components/records'
 import { useProfile } from '../context/ProfileContext'
 import { formatDayRelative, todayISO } from '../data/dates'
+import type { Recipe } from '../data/recipes'
 import { useData } from '../data/store'
 import { groupByDate, useScopedData } from '../data/useScoped'
+
+type Tab = 'log' | 'ideas'
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'log', label: 'Logged' },
+  { id: 'ideas', label: 'Ideas' },
+]
 
 export function Meals() {
   const { activeProfile } = useProfile()
   const { meals } = useScopedData()
   const { updateMeal, removeMeal } = useData()
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [preset, setPreset] = useState<Recipe | undefined>(undefined)
+  const [tab, setTab] = useState<Tab>('log')
 
   const description =
     activeProfile.id === 'household'
@@ -25,6 +37,16 @@ export function Meals() {
   const showOwner = activeProfile.id === 'household'
   const today = todayISO()
 
+  function openBlank() {
+    setPreset(undefined)
+    setSheetOpen(true)
+  }
+
+  function openWith(recipe: Recipe) {
+    setPreset(recipe)
+    setSheetOpen(true)
+  }
+
   return (
     <div>
       <PageHeader
@@ -32,21 +54,32 @@ export function Meals() {
         title="Meals"
         description={description}
         action={
-          <Button onClick={() => setSheetOpen(true)}>
+          <Button onClick={openBlank}>
             <PlusIcon className="h-4 w-4" /> Log meal
           </Button>
         }
       />
 
-      {meals.length === 0 ? (
+      <div className="max-w-xs pb-5">
+        <SegmentedControl options={TABS} value={tab} onChange={setTab} label="Meals view" />
+      </div>
+
+      {tab === 'ideas' ? (
+        <RecipeBrowser actionLabel="Log" onPick={openWith} />
+      ) : meals.length === 0 ? (
         <EmptyState
           icon={MealsIcon}
           title="No meals logged yet"
-          body="Log a meal to start building a food history — everything you add will be listed here by day."
+          body="Log a meal to start building a food history — or browse the meal ideas for something to cook."
           action={
-            <Button onClick={() => setSheetOpen(true)}>
-              <PlusIcon className="h-4 w-4" /> Log your first meal
-            </Button>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button onClick={openBlank}>
+                <PlusIcon className="h-4 w-4" /> Log your first meal
+              </Button>
+              <Button variant="secondary" onClick={() => setTab('ideas')}>
+                Browse meal ideas
+              </Button>
+            </div>
           }
         />
       ) : (
@@ -81,7 +114,7 @@ export function Meals() {
         </div>
       )}
 
-      <MealSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
+      <MealSheet open={sheetOpen} onClose={() => setSheetOpen(false)} preset={preset} />
     </div>
   )
 }

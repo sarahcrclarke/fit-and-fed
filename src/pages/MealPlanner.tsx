@@ -40,6 +40,8 @@ export function MealPlanner() {
   }, [meals, days])
 
   const weekMeals = days.flatMap((day) => byDay.get(day) ?? [])
+  // The list is for shopping, so it covers what's still to cook — not what's been eaten.
+  const toShopFor = weekMeals.filter((meal) => meal.planned)
   const isCurrentWeek = weekAnchor === startOfWeek(today)
 
   const weekLabel = isCurrentWeek
@@ -139,16 +141,18 @@ export function MealPlanner() {
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-display text-lg text-ink-900">Shopping list</h2>
           <span className="text-xs text-ink-400">
-            {weekMeals.length} {weekMeals.length === 1 ? 'meal' : 'meals'} planned
+            {toShopFor.length} {toShopFor.length === 1 ? 'meal' : 'meals'} still to cook
           </span>
         </div>
-        {weekMeals.length === 0 ? (
+        {toShopFor.length === 0 ? (
           <p className="mt-2 text-sm text-ink-500">
-            Add meals to any day above and they'll gather here as a list to shop from.
+            {weekMeals.length === 0
+              ? "Add meals to any day above and they'll gather here as a list to shop from."
+              : 'Everything planned this week has been eaten.'}
           </p>
         ) : (
           <ul className="mt-3 flex flex-col gap-2">
-            {weekMeals.map((meal) => (
+            {toShopFor.map((meal) => (
               <li key={meal.id} className="flex items-start gap-2.5 text-sm">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-moss-400" />
                 <span className="text-ink-800">{meal.name}</span>
