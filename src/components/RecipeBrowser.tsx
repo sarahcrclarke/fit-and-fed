@@ -8,6 +8,7 @@ import {
   type RecipeCategory,
   type RecipeTag,
 } from '../data/recipes'
+import { RecipeImage } from './RecipeImage'
 import { TextInput } from './fields'
 
 const TAG_STYLES: Record<RecipeTag, string> = {
@@ -95,9 +96,14 @@ export function RecipeBrowser({
           {results.map((recipe) => (
             <li
               key={recipe.id}
-              className="flex items-start gap-3 rounded-2xl border border-ink-100 bg-white px-4 py-3 shadow-card"
+              className="flex items-start gap-3 rounded-2xl border border-ink-100 bg-white p-3 shadow-card"
             >
-              <div className="min-w-0 flex-1">
+              <RecipeImage
+                art={recipe.art}
+                category={recipe.category}
+                className="h-16 w-16 shrink-0 rounded-xl ring-1 ring-ink-100 sm:h-20 sm:w-20"
+              />
+              <div className="min-w-0 flex-1 py-0.5">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                   <p className="text-sm font-medium text-ink-900">{recipe.name}</p>
                   {recipe.kind !== 'main' && (

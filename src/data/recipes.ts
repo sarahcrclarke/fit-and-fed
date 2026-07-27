@@ -38,6 +38,48 @@ export const RECIPE_TAGS: { id: RecipeTag; label: string }[] = [
 /** Mains are a meal on their own; the rest are things you add to one. */
 export type RecipeKind = 'main' | 'side' | 'sauce' | 'drink' | 'sweet'
 
+/**
+ * Which drawing stands in for the dish. Kept here so the picture is part of the recipe
+ * rather than a lookup table somewhere in the UI; `RecipeImage` renders them. Dishes that
+ * genuinely look alike on a plate — the two wraps, the baked pastas — share a drawing.
+ */
+export type DishArt =
+  | 'chicken-cream'
+  | 'chicken-couscous'
+  | 'chicken-wrap'
+  | 'beef-wrap'
+  | 'kiev'
+  | 'crispy-chicken'
+  | 'tenders'
+  | 'traybake'
+  | 'meal-prep'
+  | 'pasta-red'
+  | 'pasta-cream'
+  | 'pasta-pesto'
+  | 'bolognese'
+  | 'chilli'
+  | 'burrito-bowl'
+  | 'burger-bowl'
+  | 'meatballs'
+  | 'cottage-pie'
+  | 'lasagne'
+  | 'mac-cheese'
+  | 'gnocchi'
+  | 'lamb-rack'
+  | 'lamb-potatoes'
+  | 'flatbread'
+  | 'fish-chips'
+  | 'salmon'
+  | 'roast-potatoes'
+  | 'chips'
+  | 'crisps'
+  | 'waffle'
+  | 'katsu-sauce'
+  | 'soup'
+  | 'pizza'
+  | 'watermelon-jelly'
+  | 'lemonade'
+
 export interface Recipe {
   id: string
   name: string
@@ -47,6 +89,8 @@ export interface Recipe {
   calories: number
   /** The slot this most naturally lands in — used to prefill the log form. */
   slot: MealSlot
+  /** The drawing shown alongside it in the meal ideas list. */
+  art: DishArt
   tags: RecipeTag[]
   note?: string
 }
@@ -60,6 +104,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 520,
     slot: 'dinner',
+    art: 'chicken-cream',
     tags: ['high-protein'],
     note: 'Spinach and sun-dried tomatoes in a creamy sauce. Good with rice or pasta.',
   },
@@ -70,6 +115,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 480,
     slot: 'dinner',
+    art: 'chicken-couscous',
     tags: ['high-protein'],
     note: 'One-pan; the couscous soaks up the lemon and garlic.',
   },
@@ -80,6 +126,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 380,
     slot: 'lunch',
+    art: 'chicken-wrap',
     tags: ['high-protein', 'low-calorie'],
     note: 'Comes in under 400 kcal. Sauce on the side keeps it kid-safe.',
   },
@@ -90,6 +137,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 520,
     slot: 'lunch',
+    art: 'chicken-wrap',
     tags: ['high-protein'],
     note: 'Hold the hot honey on the kids’ portions.',
   },
@@ -100,6 +148,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 610,
     slot: 'dinner',
+    art: 'kiev',
     tags: ['kid-friendly'],
   },
   {
@@ -109,6 +158,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 540,
     slot: 'dinner',
+    art: 'chicken-cream',
     tags: ['high-protein'],
   },
   {
@@ -118,6 +168,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 430,
     slot: 'dinner',
+    art: 'crispy-chicken',
     tags: ['high-protein', 'air-fryer', 'kid-friendly'],
   },
   {
@@ -127,6 +178,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 590,
     slot: 'dinner',
+    art: 'pasta-cream',
     tags: ['high-protein'],
   },
   {
@@ -136,6 +188,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 450,
     slot: 'dinner',
+    art: 'traybake',
     tags: ['high-protein', 'hidden-veg', 'kid-friendly'],
     note: 'Everything on one tray — good for a night nobody wants to cook.',
   },
@@ -146,6 +199,7 @@ export const RECIPES: Recipe[] = [
     category: 'chicken',
     calories: 520,
     slot: 'lunch',
+    art: 'meal-prep',
     tags: ['high-protein'],
     note: 'Batch on Sunday, four lunches sorted.',
   },
@@ -158,6 +212,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 470,
     slot: 'dinner',
+    art: 'chilli',
     tags: ['high-protein', 'hidden-veg'],
     note: 'Freezes well. Mild batch for the kids, hot sauce at the table.',
   },
@@ -168,6 +223,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 540,
     slot: 'dinner',
+    art: 'bolognese',
     tags: ['hidden-veg', 'kid-friendly', 'high-protein'],
     note: 'Carrot, courgette and mushroom blitzed into the sauce.',
   },
@@ -178,6 +234,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 620,
     slot: 'dinner',
+    art: 'burrito-bowl',
     tags: ['high-protein'],
     note: 'Build-your-own bowls — the kids pick their own toppings.',
   },
@@ -188,6 +245,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 490,
     slot: 'dinner',
+    art: 'cottage-pie',
     tags: ['hidden-veg', 'kid-friendly'],
   },
   {
@@ -197,6 +255,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 450,
     slot: 'dinner',
+    art: 'meatballs',
     tags: ['kid-friendly', 'high-protein'],
   },
   {
@@ -206,6 +265,7 @@ export const RECIPES: Recipe[] = [
     category: 'beef',
     calories: 510,
     slot: 'dinner',
+    art: 'burger-bowl',
     tags: ['high-protein'],
   },
 
@@ -217,6 +277,7 @@ export const RECIPES: Recipe[] = [
     category: 'lamb',
     calories: 650,
     slot: 'dinner',
+    art: 'lamb-rack',
     tags: [],
     note: 'Weekend or guests-round dinner.',
   },
@@ -227,6 +288,7 @@ export const RECIPES: Recipe[] = [
     category: 'lamb',
     calories: 680,
     slot: 'dinner',
+    art: 'lamb-potatoes',
     tags: [],
   },
   {
@@ -236,6 +298,7 @@ export const RECIPES: Recipe[] = [
     category: 'lamb',
     calories: 570,
     slot: 'dinner',
+    art: 'flatbread',
     tags: [],
   },
 
@@ -247,6 +310,7 @@ export const RECIPES: Recipe[] = [
     category: 'fish',
     calories: 560,
     slot: 'dinner',
+    art: 'fish-chips',
     tags: ['kid-friendly', 'seafood', 'air-fryer'],
     note: 'For the family — contains seafood.',
   },
@@ -257,6 +321,7 @@ export const RECIPES: Recipe[] = [
     category: 'fish',
     calories: 520,
     slot: 'dinner',
+    art: 'salmon',
     tags: ['seafood', 'high-protein'],
     note: 'For the family — contains seafood.',
   },
@@ -269,6 +334,7 @@ export const RECIPES: Recipe[] = [
     category: 'pasta',
     calories: 520,
     slot: 'dinner',
+    art: 'pasta-red',
     tags: ['kid-friendly'],
   },
   {
@@ -278,6 +344,7 @@ export const RECIPES: Recipe[] = [
     category: 'pasta',
     calories: 610,
     slot: 'dinner',
+    art: 'pasta-pesto',
     tags: ['high-protein'],
   },
   {
@@ -287,6 +354,7 @@ export const RECIPES: Recipe[] = [
     category: 'pasta',
     calories: 580,
     slot: 'dinner',
+    art: 'mac-cheese',
     tags: ['hidden-veg', 'kid-friendly'],
     note: 'Butternut squash blended into the cheese sauce.',
   },
@@ -297,6 +365,7 @@ export const RECIPES: Recipe[] = [
     category: 'pasta',
     calories: 540,
     slot: 'dinner',
+    art: 'lasagne',
     tags: ['hidden-veg', 'kid-friendly'],
   },
   {
@@ -306,6 +375,7 @@ export const RECIPES: Recipe[] = [
     category: 'pasta',
     calories: 500,
     slot: 'dinner',
+    art: 'gnocchi',
     tags: ['kid-friendly'],
   },
 
@@ -317,6 +387,7 @@ export const RECIPES: Recipe[] = [
     category: 'sides',
     calories: 380,
     slot: 'dinner',
+    art: 'tenders',
     tags: ['air-fryer', 'kid-friendly', 'high-protein', 'low-calorie'],
   },
   {
@@ -326,6 +397,7 @@ export const RECIPES: Recipe[] = [
     category: 'sides',
     calories: 520,
     slot: 'dinner',
+    art: 'kiev',
     tags: ['air-fryer', 'kid-friendly'],
   },
   {
@@ -335,6 +407,7 @@ export const RECIPES: Recipe[] = [
     category: 'sides',
     calories: 260,
     slot: 'dinner',
+    art: 'roast-potatoes',
     tags: ['air-fryer', 'kid-friendly'],
   },
   {
@@ -344,6 +417,7 @@ export const RECIPES: Recipe[] = [
     category: 'sides',
     calories: 290,
     slot: 'dinner',
+    art: 'chips',
     tags: ['air-fryer', 'kid-friendly'],
   },
   {
@@ -353,6 +427,7 @@ export const RECIPES: Recipe[] = [
     category: 'sides',
     calories: 180,
     slot: 'snack',
+    art: 'crisps',
     tags: ['air-fryer', 'kid-friendly', 'low-calorie'],
     note: 'Crisps without the packet.',
   },
@@ -365,6 +440,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 240,
     slot: 'lunch',
+    art: 'waffle',
     tags: ['kid-friendly', 'hidden-veg', 'low-calorie'],
     note: 'The kids loved these. Great with katsu sauce for dipping.',
   },
@@ -375,6 +451,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 120,
     slot: 'dinner',
+    art: 'katsu-sauce',
     tags: ['kid-friendly', 'hidden-veg', 'low-calorie'],
     note: 'Goes with the veg waffles, tenders or plain rice.',
   },
@@ -385,6 +462,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 190,
     slot: 'lunch',
+    art: 'soup',
     tags: ['kid-friendly', 'hidden-veg', 'low-calorie'],
   },
   {
@@ -394,6 +472,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 420,
     slot: 'dinner',
+    art: 'pizza',
     tags: ['kid-friendly'],
     note: 'Base and sauce only — toppings on top of this.',
   },
@@ -404,6 +483,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 70,
     slot: 'snack',
+    art: 'watermelon-jelly',
     tags: ['kid-friendly', 'low-calorie'],
     note: 'Party centrepiece — set the jelly in the hollowed-out melon.',
   },
@@ -414,6 +494,7 @@ export const RECIPES: Recipe[] = [
     category: 'kids',
     calories: 90,
     slot: 'snack',
+    art: 'lemonade',
     tags: ['kid-friendly', 'low-calorie'],
     note: 'Party jug.',
   },
