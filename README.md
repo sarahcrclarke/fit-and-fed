@@ -16,7 +16,8 @@ A fitness and nutrition app for a two-person household — built for Sarah and D
 - `src/context/ProfileContext.tsx` — the Sarah / Dom / Household profile switcher
 - `src/data` — record types, date helpers, and the localStorage-backed store
 - `src/components` — shared UI (page headers, cards, form fields, sheets, icons)
-- `src/components/RecipeImage.tsx` — the drawings shown against each meal idea
+- `src/assets/recipes` — meal idea photographs, named after each recipe's `id`
+- `src/components/RecipeImage.tsx` — a meal idea's photo, or its drawing as fallback
 - `src/components/MuscleMap.tsx`, `src/components/anatomy.ts` — the Body Focus heatmap
 - `src/pwa` — service worker registration
 - `public/manifest.webmanifest`, `public/sw.js` — install metadata and the offline app shell
@@ -37,8 +38,11 @@ the app still runs in private-browsing modes — it just won't persist.
 `src/assets/recipes/` named after the recipe's `id` — `salmon-traybake.jpg` — and it
 becomes that meal's picture; nothing else needs editing, because `src/data/recipePhotos.ts`
 resolves the folder at build time. Photos come out content-hashed in `dist/assets/`, which
-the service worker already caches cache-first, so they work offline after first view. See
-`src/assets/recipes/README.md` for naming, size and licensing.
+the service worker already caches cache-first, so they work offline after first view.
+
+`scripts/fetch-recipe-photos.mjs` will fill the folder from Pexels or Unsplash — cropped
+square, compressed, attribution recorded — given an API key and a machine with open network
+access. See `src/assets/recipes/README.md` for that, and for naming, size and licensing.
 
 Until a recipe has a photo it falls back to a drawing, so the list is never blank. Each
 recipe carries an `art` key (`src/data/recipes.ts`) naming one of the drawings in
@@ -114,3 +118,4 @@ npm run dev
 - `npm run build` — type-check and build for production
 - `npm run lint` — run Oxlint
 - `npm run preview` — preview the production build locally, service worker included
+- `node scripts/fetch-recipe-photos.mjs` — fill `src/assets/recipes` from a stock library

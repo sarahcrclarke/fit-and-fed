@@ -18,6 +18,21 @@ never blank while photos are still being collected.
 - **Size**: 400 × 400 is plenty for the thumbnail at 2× density. Keep each file under
   ~40 KB; the app is installable offline, so every photo is weight someone downloads.
 
+## Fetching a starter set
+
+`scripts/fetch-recipe-photos.mjs` fills this folder from a stock library, cropped square
+and compressed, and writes the attribution table below:
+
+```bash
+PEXELS_API_KEY=… node scripts/fetch-recipe-photos.mjs           # or --provider unsplash
+node scripts/fetch-recipe-photos.mjs --dry-run                  # see the search terms first
+node scripts/fetch-recipe-photos.mjs --only salmon-traybake --force
+```
+
+Stock search returns *a* photo of the dish, not a photo of this household's version of it,
+so look at the results before committing them. When one is wrong, edit that recipe's line
+in `SEARCH_TERMS` at the top of the script and re-run with `--only`.
+
 ## Licensing
 
 These files ship inside a published web app. Only add photos that are yours, or that carry
